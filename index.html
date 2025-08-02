@@ -1,0 +1,331 @@
+
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>નવીનતમ સામાન્ય જ્ઞાન ક્વિઝ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Vadodara:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Styles */
+        body {
+            font-family: 'Hind Vadodara', sans-serif;
+            background-color: #e0f7fa; /* Light Blue Background */
+            color: #004d40;
+        }
+        .quiz-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid #b2ebf2;
+        }
+        .option-btn {
+            transition: all 0.3s ease;
+            border-width: 2px;
+            border-color: #4dd0e1;
+        }
+        /* Best CSS Hover Effect */
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 15px rgba(77, 208, 225, 0.3);
+            background-color: #26c6da;
+            color: white;
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .correct {
+            background-color: #2e7d32 !important; /* Darker Green for better contrast */
+            color: white !important;
+            border-color: #1b5e20 !important;
+        }
+        .incorrect {
+            background-color: #c62828 !important; /* Red */
+            color: white !important;
+            border-color: #b71c1c !important;
+        }
+        .explanation {
+            background-color: #f1f5f9;
+            border-left: 5px solid #00acc1;
+        }
+        .nav-btn {
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .nav-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+        }
+        .nav-btn:disabled {
+            background-color: #9e9e9e;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <div class="quiz-container w-full">
+        <!-- Header Section with Score -->
+        <div id="header" class="flex flex-col sm:flex-row justify-between items-center mb-6 pb-4 border-b-2 border-cyan-100">
+            <h1 class="text-3xl font-bold text-cyan-800 mb-4 sm:mb-0 text-center">નવીનતમ સામાન્ય જ્ઞાન ક્વિઝ</h1>
+            <div class="flex space-x-4 text-lg">
+                <div class="bg-green-100 text-green-800 font-semibold px-4 py-2 rounded-lg">સ્કોર: <span id="score">0</span></div>
+                <div class="bg-red-100 text-red-800 font-semibold px-4 py-2 rounded-lg">ખોટા: <span id="wrong-answers">0</span></div>
+            </div>
+        </div>
+
+        <!-- Main Quiz Body -->
+        <div id="quiz-body">
+            <div id="question-container" class="mb-6">
+                <h2 id="question-text" class="text-2xl font-semibold text-gray-800 leading-snug">પ્રશ્ન અહીં આવશે...</h2>
+            </div>
+            <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Options will be dynamically inserted here -->
+            </div>
+            <div id="explanation-container" class="mt-6 p-4 rounded-lg explanation hidden">
+                <h3 class="font-bold text-lg text-cyan-700 mb-2">સમજૂતી</h3>
+                <p id="explanation-text" class="text-gray-700"></p>
+            </div>
+        </div>
+
+        <!-- Quiz Completed State -->
+        <div id="results-container" class="text-center hidden">
+            <h2 class="text-4xl font-bold text-cyan-800 mb-4">ક્વિઝ પૂર્ણ!</h2>
+            <p class="text-xl text-gray-700 mb-2">ક્વિઝ પૂર્ણ કરવા બદલ અભિનંદન.</p>
+            <div class="text-2xl font-semibold my-6">
+                અંતિમ સ્કોર: <span id="final-score" class="text-green-600">0</span>
+            </div>
+             <p class="text-lg text-gray-600">તમે <span id="total-wrong" class="text-red-600 font-bold"></span> પ્રશ્નોના ખોટા જવાબ આપ્યા.</p>
+            <button id="restart-btn" class="mt-8 w-full sm:w-auto bg-cyan-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-cyan-700 focus:outline-none focus:ring-4 focus:ring-cyan-300 transition-all duration-300">
+                ફરીથી રમો
+            </button>
+        </div>
+
+        <!-- Footer with Navigation Buttons -->
+        <div id="navigation-container" class="mt-8 pt-4 border-t-2 border-cyan-100 flex justify-between items-center">
+            <button id="prev-btn" class="nav-btn bg-gray-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-300">
+                &larr; પાછળ
+            </button>
+            <div id="progress-text" class="text-gray-600 font-semibold"></div>
+            <button id="next-btn" class="nav-btn bg-cyan-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-cyan-600 focus:outline-none focus:ring-4 focus:ring-cyan-200">
+                આગળ &rarr;
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- QUIZ DATA ---
+        const quizData = [
+            { question: "તાજેતરમાં વિધાનસભાની કઈ બેઠક પર પેટાચૂંટણી યોજાઈ હતી?", options: ["વિસાવદર", "ઉપલબ્ધ નથી", "ઉપલબ્ધ નથી", "A અને B"], answer: 3, explanation: "આપેલ વિકલ્પો મુજબ, સાચો જવાબ (D) A અને B છે. તાજેતરમાં વિસાવદર, વાઘોડિયા, પોરબંદર જેવી અનેક બેઠકો પર પેટાચૂંટણી યોજાઈ હતી." },
+            { question: "પેટાચૂંટણી ક્યાં સંજોગોમાં યોજવામાં આવે છે?", options: ["જયારે ધારાસભ્યનું અવસાન થાય", "જયારે ધારાસભ્ય રાજીનામુ આપે", "જયારે ધારાસભ્ય ને ગેરલાયક ઠરાવવામાં આવે", "ઉપરોક્ત તમામ"], answer: 3, explanation: "સાચો જવાબ (D) ઉપરોક્ત તમામ છે. આ બધા સંજોગોમાં પ્રતિનિધિની બેઠક ખાલી પડે ત્યારે પેટાચૂંટણી યોજાય છે." },
+            { question: "તાજેતરમાં વર્ષ 2025માં અમદાવાદમાં ભગવાન જગન્નાથની કેટલામી રથયાત્રા યોજાઈ હતી?", options: ["145મી", "147મી", "146મી", "148મી"], answer: 3, explanation: "વર્ષ 2025 માં ભગવાન જગન્નાથની 148મી રથયાત્રા યોજાઈ. સાચો જવાબ (D) 148મી છે." },
+            { question: "11મા આંતરરાષ્ટ્રીય યોગ દિવસની ઉજવણી ગુજરાતના કયા જિલ્લામા કરવામા આવી હતી?", options: ["અમદાવાદ", "ગાંધીનગર", "સુરત", "મહેસાણા"], answer: 1, explanation: "11મા આંતરરાષ્ટ્રીય યોગ દિવસની રાજ્ય કક્ષાની ઉજવણી ગાંધીનગરમાં કરવામાં આવી હતી. સાચો જવાબ (B) ગાંધીનગર છે." },
+            { question: "2025માં શાળા પ્રવેશોત્સવનો રાજ્યવ્યાપી પ્રારંભ ક્યાંથી કરવામાં આવ્યો હતો?", options: ["અમદાવાદ", "મહીસાગર", "ગાંધીનગર", "ભરૂચ"], answer: 3, explanation: "શાળા પ્રવેશોત્સવ ૨.૦ નો રાજ્યવ્યાપી પ્રારંભ ભરૂચ જિલ્લામાંથી કરવામાં આવ્યો હતો. સાચો જવાબ (D) ભરૂચ છે." },
+            { question: "તાજેતરમાં ભારતના સૌથી મોટા અને સૌથી અદ્યતન ઓટોનોમસ અંડરવોટર વ્હીકલ (AUV), જલકાપીનું નિર્માણ કાર્ય ક્યાં શરુ થયું?", options: ["હાલોલ", "મુંબઈ", "હૈદરાબાદ", "કોઝીકોડ"], answer: 0, explanation: "ભારતના સૌથી મોટા AUV 'જલકાપી'નું નિર્માણ કાર્ય ગુજરાતના હાલોલમાં શરૂ થયું છે. સાચો જવાબ (A) હાલોલ છે." },
+            { question: "ત્રિભુવન સહકારી યુનિવર્સિટીનું ભૂમિપૂજન કોણે કર્યું?", options: ["વડાપ્રધાન નરેન્દ્ર મોદી", "મુખ્યમંત્રી ભુપેન્દ્ર પટેલ", "કેન્દ્રીય ગૃહ અને સહકાર મંત્રી અમિત શાહ", "વિધાનસભા અધ્યક્ષ શંકર ચૌધરી"], answer: 2, explanation: "કેન્દ્રીય ગૃહ અને સહકાર મંત્રી શ્રી અમિત શાહે ત્રિભુવન સહકારી યુનિવર્સિટીનું ભૂમિપૂજન કર્યું હતું. સાચો જવાબ (C) છે." },
+            { question: "ગુજરાત સરકાર દ્વારા આગામી વાઇબ્રન્ટ ગુજરાત ગ્લોબલ સમિટ રાજ્યના કેટલા ઝોનમાં પ્રાદેશિક વાઇબ્રન્ટ સમિટ યોજવાનું આયોજન કરવામાં આવશે?", options: ["2", "3", "4", "5"], answer: 2, explanation: "ગુજરાત સરકાર રાજ્યના 4 ઝોનમાં (ઉત્તર, મધ્ય, દક્ષિણ અને સૌરાષ્ટ્ર-કચ્છ) પ્રાદેશિક વાઇબ્રન્ટ સમિટ યોજશે. સાચો જવાબ (C) 4 છે." },
+            { question: "ઉત્તર ગુજરાત પ્રાદેશિક વાઇબ્રન્ટ સમિટ 2025 ક્યાં શહેરમાં યોજાવાની છે?", options: ["રાજકોટ", "મહેસાણા", "પાટણ", "હિંમતનગર"], answer: 1, explanation: "ઉત્તર ગુજરાત પ્રાદેશિક વાઇબ્રન્ટ સમિટ મહેસાણા શહેરમાં યોજાવાની છે. સાચો જવાબ (B) મહેસાણા છે." },
+            { question: "તાજેતરમાં ફેક્ટરી (ગુજરાત સંશોધન) ઓર્ડિનન્સ 2025 નવા સુધારા મુજબ દૈનિક કામ ના કલાકો 9 થી વધારીને કેટલા કરવામાં આવ્યા છે?", options: ["10 કલાક", "11 કલાક", "12 કલાક", "13 કલાક"], answer: 2, explanation: "નવા સુધારા મુજબ, દૈનિક કામના કલાકો 9 થી વધારીને 12 કલાક કરવામાં આવ્યા છે. સાચો જવાબ (C) 12 કલાક છે." },
+            { question: "તાજેતરમાં ફેક્ટરી (ગુજરાત સંશોધન) ઓર્ડિનન્સ 2025 મહિલાઓને ક્યાં સમય ગાળા દરમિયાન નાઈટ શિફ્ટમાં કામ કરવાની છૂટ અપાઈ છે?", options: ["રાત્રે 8 વાગ્યાથી સવારે 5 વાગ્યા સુધી", "સાંજે 6 વાગ્યાથી સવારે 6 વાગ્યા સુધી", "રાત્રે 9 વાગ્યાથી સવારે 4 વાગ્યા સુધી", "રાત્રે 7 વાગ્યાથી સવારે 6 વાગ્યા સુધી"], answer: 3, explanation: "મહિલાઓને રાત્રે 7 વાગ્યાથી સવારે 6 વાગ્યા સુધી નાઈટ શિફ્ટમાં કામ કરવાની છૂટ આપવામાં આવી છે. સાચો જવાબ (D) છે." },
+            { question: "તાજેતરમાં યોજાયેલ પેટાચૂંટણી 2025માં વિસાવદર વિધાનસભા બેઠક પર કોણ વિજેતા બન્યા હતા?", options: ["ભુપેન્દ્રભાઈ ભાયાણી", "નીલેશ ખેડા", "ગોપાલ ઇટાલિયા", "રાજેન્દ્ર ચાવડા"], answer: 2, explanation: "વિસાવદર વિધાનસભા બેઠક પર આમ આદમી પાર્ટીના ગોપાલ ઇટાલિયા વિજેતા બન્યા હતા. સાચો જવાબ (C) છે." },
+            { question: "પેટાચૂંટણીમાં વિજેતા ઉમેદવાર કેટલા સમય માટે પદ પર રહે છે?", options: ["5 વર્ષ", "બાકી રહેલી મુદત માટે", "2 વર્ષ", "1 વર્ષ"], answer: 1, explanation: "પેટાચૂંટણીમાં વિજેતા ઉમેદવાર વિધાનસભાની બાકી રહેલી મુદત માટે જ પદ પર રહે છે. સાચો જવાબ (B) છે." },
+            { question: "તાજેતરમાં એર ઈન્ડિયા એરલાઇન્સ ફ્લાઇટ AI 171 દુર્ઘટનાગ્રસ્ત વિમાન કઈ મોડલ શ્રેણીનું હતું?", options: ["બોઈંગ 737", "એરબસ A320", "બોઇંગ 787-8 ડ્રીમલાઇનર", "બોઇંગ 777"], answer: 2, explanation: "દુર્ઘટનાગ્રસ્ત વિમાન બોઇંગ 787-8 ડ્રીમલાઇનર મોડલનું હતું. સાચો જવાબ (C) છે." },
+            { question: "તાજેતરમાં એર ઇન્ડિયા એરલાઇન્સ ફ્લાઇટ AI 171 દુર્ઘટનાની તપાસ માટે રચાયેલી સમિતિનું અધ્યક્ષ કોણ છે?", options: ["વિજય વાઘાણી", "અમિતાભ કાંત", "ગોવિંદ મોહન", "સમીર ભરદ્વાજ"], answer: 2, explanation: "આ દુર્ઘટનાની તપાસ માટે રચાયેલી સમિતિના અધ્યક્ષ નાગરિક ઉડ્ડયન સચિવ ગોવિંદ મોહન છે. સાચો જવાબ (C) છે." },
+            { question: "Axiom-4 મિશનના આયોજન માટે કઈ સંસ્થા જવાબદાર છે?", options: ["ISRO", "NASA", "એક્સિઓમ સ્પેસ", "યુરોપિયન સ્પેસ એજન્સી"], answer: 2, explanation: "Axiom-4 મિશનનું આયોજન એક્સિઓમ સ્પેસ નામની ખાનગી કંપની દ્વારા કરવામાં આવ્યું છે. સાચો જવાબ (C) છે." },
+            { question: "ચિનાબ રેલવે બ્રિજ નું નિર્માણ કઈ કંપની દ્વારા કરવામાં આવ્યું હતું?", options: ["AFCONS INFRA STRUCTURE", "VSL ઇન્ડિયા", "કોંકણ રેલવે", "આપેલ તમામ"], answer: 3, explanation: "ચિનાબ બ્રિજનું નિર્માણ AFCONS, VSL ઇન્ડિયા અને કોંકણ રેલવેના સંયુક્ત પ્રયાસોથી થયું છે. સાચો જવાબ (D) આપેલ તમામ છે." },
+            { question: "તાજેતરમાં નવી દિલ્હી ખાતે 'ભારતીય ભાષા અનુભાગ (ભારતીય ભાષાઓ વિભાગ)'નું ઉદ્ઘાટન કોણે કર્યું?", options: ["નરેન્દ્ર મોદી", "અમિત શાહ", "નિર્મલા સીતારામન", "ધર્મેન્દ્ર પ્રધાન"], answer: 1, explanation: "કેન્દ્રીય ગૃહ મંત્રી શ્રી અમિત શાહે 'ભારતીય ભાષા અનુભાગ'નું ઉદ્ઘાટન કર્યું હતું. સાચો જવાબ (B) છે." },
+            { question: "તાજેતરમાં વર્ષ 2025માં BSE (બોમ્બે સ્ટોક એક્સચેન્જ) એ કેટલા વર્ષ પૂર્ણ કર્યા?", options: ["125", "150", "175", "100"], answer: 1, explanation: "એશિયાના સૌથી જૂના સ્ટોક એક્સચેન્જ BSE એ વર્ષ 2025 માં 150 વર્ષ પૂર્ણ કર્યા. સાચો જવાબ (B) 150 છે." },
+            { question: "તાજેતરમાં ક્યાં બે દેશ વચ્ચે પ્રથમવાર વાયુસેનાની સંયુક્ત કવાયત 'Tiger Claw' નું આયોજન કરવામાં આવ્યું હતું?", options: ["ભારત-જાપાન", "ભારત-ફ્રાન્સ", "ભારત-અમેરિકા", "ભારત-ચીન"], answer: 2, explanation: "'Tiger Claw' નામની સંયુક્ત વાયુસેના કવાયત ભારત અને અમેરિકા વચ્ચે પ્રથમવાર યોજાઈ હતી. સાચો જવાબ (C) છે." },
+            { question: "તાજેતરમાં રાષ્ટ્રપતિ દ્રૌપદી મુર્મૂ દ્વારા રાજ્યસભામાં કેટલા સભ્યોની નિમણૂક કરવામાં આવી?", options: ["3", "4", "5", "6"], answer: 1, explanation: "રાષ્ટ્રપતિએ બંધારણના અનુચ્છેદ 80 હેઠળ રાજ્યસભામાં 4 નવા સભ્યોની નિમણૂક કરી. સાચો જવાબ (B) 4 છે." },
+            { question: "તાજેતરમાં મધ્યપ્રદેશમાં આવેલા પંચમઢી વન્યજીવ અભ્યારણનું નામ બદલીને શું રાખવામાં આવ્યું છે?", options: ["રાજા કમલાપતિ પંચમઢી વન્યજીવ અભયારણ્ય", "રાજા ભીમ નાયક પંચમઢી વન્યજીવ અભયારણ્ય", "રાજા ભભૂત સિંહ પંચમઢી વન્યજીવ અભ્યારણ", "રાજા શંકર શાહ પંચમઢી વન્યજીવ અભયારણ્ય"], answer: 2, explanation: "પંચમઢી વન્યજીવ અભ્યારણનું નામ બદલીને 'રાજા ભભૂત સિંહ પંચમઢી વન્યજીવ અભ્યારણ' રાખવામાં આવ્યું છે. સાચો જવાબ (C) છે." },
+            { question: "તાજેતરમાં મિસ વર્લ્ડ 2025 નો ખિતાબ કોને એનાયત કરવામાં આવ્યો?", options: ["ક્રિસ્ટીના પિસ્ઝકોવા", "નંદિની ગુપ્તા", "ઓપલ સુયાતા ચુઆંગશ્રી", "હેસેટ ડેરેજે અદમાસુ"], answer: 2, explanation: "થાઈલેન્ડની ઓપલ સુયાતા ચુઆંગશ્રીને મિસ વર્લ્ડ 2025 નો ખિતાબ એનાયત કરવામાં આવ્યો. સાચો જવાબ (C) છે." },
+            { question: "તાજેતરમાં ભારતનું પ્રથમ અંડર વોટર મ્યુઝિયમ INS ગુલદાર કયા રાજ્યમાં સ્થાપિત કરવામાં આવશે?", options: ["મહારાષ્ટ્ર", "કેરળ", "ગોવા", "તમિલનાડુ"], answer: 0, explanation: "ભારતનું પ્રથમ અંડરવોટર મ્યુઝિયમ INS ગુલદારને મહારાષ્ટ્રના સિંધુદુર્ગમાં સ્થાપિત કરવામાં આવશે. સાચો જવાબ (A) છે." },
+            { question: "તાજેતરમાં ડિજિટલ ઇન્ડિયા મિશનને કેટલા વર્ષ પૂર્ણ થયા?", options: ["5 વર્ષ", "15 વર્ષ", "10 વર્ષ", "20 વર્ષ"], answer: 2, explanation: "1 જુલાઈ 2025ના રોજ ડિજિટલ ઇન્ડિયા મિશનને 10 વર્ષ પૂર્ણ થયા. સાચો જવાબ (C) 10 વર્ષ છે." },
+            { question: "તાજેતરમાં RAWના નવા ચીફ તરીકે કોની નિમણૂક કરવામાં આવી?", options: ["સમંત કોયલ", "આર. નંદા", "પરાગ જૈન", "અજય સિંહ"], answer: 2, explanation: "પરાગ જૈનને RAW (રિસર્ચ એન્ડ એનાલિસિસ વિંગ)ના નવા ચીફ તરીકે નિયુક્ત કરવામાં આવ્યા છે. સાચો જવાબ (C) છે." },
+            { question: "તાજેતરમાં આયુષ સુરક્ષા પોર્ટલ કયા પ્રકારની ફરિયાદો માટે ઉપયોગી છે?", options: ["શિક્ષણ ફરિયાદો", "ભ્રામક આયુષ જાહેરાતો અને દવાઓના રિએકશન અંગે", "ટ્રાન્સપોર્ટ બાબતો", "ટોક્સિક કચરો"], answer: 1, explanation: "આયુષ સુરક્ષા પોર્ટલ ભ્રામક આયુષ જાહેરાતો અને દવાઓના રિએકશન અંગેની ફરિયાદો માટે છે. સાચો જવાબ (B) છે." },
+            { question: "તાજેતરમાં ક્યાં બે દેશ વચ્ચે સંયુક્ત લશ્કરી કવાયત 'શક્તિ 2025'નું આયોજન કરવામાં આવ્યું હતું?", options: ["ભારત-જાપાન", "ભારત-ફ્રાન્સ", "ભારત-અમેરિકા", "ભારત-યુકે"], answer: 1, explanation: "'શક્તિ 2025' સંયુક્ત લશ્કરી કવાયત ભારત અને ફ્રાન્સ વચ્ચે યોજાઈ હતી. સાચો જવાબ (B) છે." },
+            { question: "તાજેતરમાં યોજાયેલ 26મી એશિયન એથ્લેટિક્સ ચેમ્પિયનશિપ-2025માં ભારત મેડલ ટેલીમાં ક્યા સ્થાને રહ્યું?", options: ["પ્રથમ", "બીજા", "ત્રીજા", "ચોથા"], answer: 2, explanation: "આ ચેમ્પિયનશિપમાં ભારતે 19 મેડલ સાથે ત્રીજું સ્થાન મેળવ્યું હતું. સાચો જવાબ (C) ત્રીજા છે." },
+            { question: "તાજેતરમાં સમાચારોમાં રહેલું RB-CRIS નીચેમાંથી કયા વિષય સાથે સંબંધિત છે?", options: ["ગ્રામ્ય વિસ્તારો માટે નાણાંકીય સમાવેશ", "ડિજિટલ બેંકો માટે સાઇબર સુરક્ષા નિયમન", "નાણાકીય સ્થિરતા માટે હવામાન જોખમ ડેટા", "રિયલ-ટાઇમ પેમેન્ટ સિસ્ટમ"], answer: 3, explanation: "RB-CRIS એ રિયલ-ટાઇમ પેમેન્ટ સિસ્ટમ સાથે સંબંધિત છે. સાચો જવાબ (D) છે." },
+            { question: "તાજેતરમાં મેનાર અને ખીચન વેટલેન્ડ સ્થળોનો રામસર સાઇટમાં સમાવેશ કરવામાં આવ્યો જે ક્યા રાજ્યમાં સ્થિત છે?", options: ["તમિલનાડુ", "મધ્યપ્રદેશ", "ઉપલબ્ધ નથી", "રાજસ્થાન"], answer: 3, explanation: "મેનાર અને ખીચન વેટલેન્ડ રાજસ્થાન રાજ્યમાં આવેલા છે, જેમને રામસર સાઇટનો દરજ્જો મળ્યો છે. સાચો જવાબ (D) છે." },
+            { question: "તાજેતરમાં C-CARES વર્ઝન 2.0 પોર્ટલ કયા મંત્રાલય હેઠળ શરૂ કરવામાં આવ્યું?", options: ["કોલસા મંત્રાલય", "રસાયણો અને ખાતરો મંત્રાલય", "વાણિજ્ય અને ઉધોગ મંત્રાલય", "ભારે ઉધોગો મંત્રાલય"], answer: 0, explanation: "C-CARES 2.0 પોર્ટલ કોલસા મંત્રાલય દ્વારા શરૂ કરવામાં આવ્યું છે. સાચો જવાબ (A) છે." },
+            { question: "તાજેતરમાં DRDO દ્વારા કઈ મિસાઈલને બેંકર બસ્ટર મિસાઈલ તરીકે વિકસાવવામાં આવશે?", options: ["બ્રહ્મોસ", "પૃથ્વી", "અગ્નિ 5", "શૌર્ય"], answer: 2, explanation: "DRDO અગ્નિ 5 મિસાઈલને 'બેંકર બસ્ટર' તરીકે વિકસાવશે. સાચો જવાબ (C) છે." },
+            { question: "તાજેતરમાં ભારતની પ્રથમ યોગ પોલિસી જાહેર કરનાર કયું રાજ્ય બન્યું?", options: ["હિમાચલ", "ઉત્તરાખંડ", "ત્રિપુરા", "હરિયાણા"], answer: 1, explanation: "ઉત્તરાખંડ ભારતનું પ્રથમ રાજ્ય બન્યું છે જેણે પોતાની યોગ પોલિસી જાહેર કરી છે. સાચો જવાબ (B) છે." },
+            { question: "તાજેતરમાં ક્યાં બે દેશ વચ્ચે નૌકાદળ કવાયત 'Passage Exercise (PASSEX) - 2025' નું આયોજન કરવામાં આવ્યું?", options: ["ભારત-જાપાન", "ભારત-ફ્રાન્સ", "ભારત-અમેરિકા", "ભારત અને યુકે"], answer: 3, explanation: "'PASSEX - 2025' નૌકાદળ કવાયત ભારત અને યુકે વચ્ચે યોજાઈ હતી. સાચો જવાબ (D) છે." },
+            { question: "તાજેતરમાં ભારતે કયું પ્રથમ સ્વદેશી ડાઇવિંગ સપોર્ટ વેસલ લોન્ચ કર્યું?", options: ["INS અરિહંત", "INS કલવારી", "INS નિસ્તાર", "INS વિક્રમાદિત્ય"], answer: 2, explanation: "INS નિસ્તાર ભારતનું પ્રથમ સ્વદેશી ડાઇવિંગ સપોર્ટ વેસલ છે. સાચો જવાબ (C) છે." },
+            { question: "SPREE યોજના કયા મંત્રાલય હેઠળ કાર્યાન્વિત છે?", options: ["આરોગ્ય મંત્રાલય", "શ્રમ અને રોજગાર મંત્રાલય", "ગૃહ મંત્રાલય", "સામાજિક ન્યાય મંત્રાલય"], answer: 1, explanation: "SPREE યોજના શ્રમ અને રોજગાર મંત્રાલય હેઠળ કાર્યાન્વિત છે. સાચો જવાબ (B) છે." },
+            { question: "'Skills for the Future' રિપોર્ટ નીચેના પૈકી કઇ સંસ્થા દ્વારા રજૂ થયો છે?", options: ["નિતી આયોગ", "નેશનલ સ્કિલ ડેવલપમેન્ટ કોર્પોરેશન", "ઇન્સ્ટિટ્યુટ ફોર કોંપિટિટિવનેસ", "NSDC International"], answer: 3, explanation: "'Skills for the Future' રિપોર્ટ NSDC International દ્વારા રજૂ કરવામાં આવ્યો છે. સાચો જવાબ (D) છે." },
+            { question: "PLFS ડેટા મુજબ ભારતમાં કેટલા ટકા વસ્તી પાસે માત્ર પ્રાથમિક શિક્ષણ છે?", options: ["21.3%", "91.5%", "52.4%", "12.6%"], answer: 2, explanation: "PLFS ડેટા મુજબ, ભારતમાં 52.4% વસ્તી પાસે માત્ર પ્રાથમિક શિક્ષણ છે. સાચો જવાબ (C) છે." },
+            { question: "તાજેતરમાં કૃષિ અને તેના સંલગ્ન ક્ષેત્રો પર રિપોર્ટ કયા મંત્રાલયના કાર્યાલય દ્વારા રજૂ કરાયો છે?", options: ["કૃષિ મંત્રાલય", "આંકડા અને કાર્યક્રમ અમલીકરણ મંત્રાલય", "નાણા મંત્રાલય", "ઉચ્ચ શિક્ષણ મંત્રાલય"], answer: 1, explanation: "આ રિપોર્ટ આંકડા અને કાર્યક્રમ અમલીકરણ મંત્રાલય દ્વારા રજૂ કરવામાં આવ્યો છે. સાચો જવાબ (B) છે." },
+            { question: "તાજેતરમાં કૃષિ અને તેના સંલગ્ન ક્ષેત્રો પર અહેવાલ સંદર્ભે મસાલા ઉત્પાદનમાં કયું રાજ્ય ટોચ પર છે?", options: ["કેરળ", "ઉત્તર પ્રદેશ", "ગુજરાત", "મધ્યપ્રદેશ"], answer: 3, explanation: "મસાલા ઉત્પાદનમાં મધ્યપ્રદેશ રાજ્ય ટોચ પર છે. સાચો જવાબ (D) છે." },
+            { question: "તાજેતરમાં જાહેર કરાયેલ \"Employment Linked Incentive Scheme\" નો મુખ્ય ઉદ્દેશ્ય શું છે?", options: ["બેરોજગાર યુવાનોને વિદેશ મોકલવા", "ભારતમાં રોજગારીનું સર્જન કરવું અને સામાજિક સુરક્ષાને પ્રોત્સાહન આપવું", "માત્ર કૃષિ ક્ષેત્રે રોજગારી વધારવી", "સરકારી નોકરીઓનું સર્જન કરવું"], answer: 1, explanation: "આ યોજનાનો મુખ્ય ઉદ્દેશ્ય ભારતમાં રોજગારીનું સર્જન કરવું અને સામાજિક સુરક્ષાને પ્રોત્સાહન આપવાનો છે. સાચો જવાબ (B) છે." },
+            { question: "રાષ્ટ્રીય રમતગમત નીતિ-2025 કઈ જૂની નીતિને બદલીને લાવવામાં આવી છે?", options: ["રમતગમત વિકાસ ધોરણ - 1995", "રાષ્ટ્રીય ખેલ નીતિ - 2001", "ખેલ મિશન યોજના - 2010", "પુનરજાગૃત ખેલ દિશા - 2015"], answer: 1, explanation: "નવી રાષ્ટ્રીય રમતગમત નીતિ-2025 એ 'રાષ્ટ્રીય ખેલ નીતિ - 2001'નું સ્થાન લીધું છે. સાચો જવાબ (B) છે." },
+            { question: "તાજેતરમાં કઈ રાજ્ય સરકારે ધોરણ 1 થી 5 માં ત્રિભાષી નીતિ લાગુ કરવાની યોજના બનાવી હતી જેનો વિરોધ થતાં યોજના પાછી ખેંચાઈ?", options: ["ગુજરાત", "રાજસ્થાન", "મહારાષ્ટ્ર", "દિલ્હી"], answer: 2, explanation: "મહારાષ્ટ્ર સરકારે ધોરણ 1 થી 5 માં ત્રિભાષી નીતિ લાગુ કરવાની યોજના પાછી ખેંચી લીધી હતી. સાચો જવાબ (C) છે." },
+            { question: "'મરાઠા મિલિટરી લેન્ડસ્કેપ ઓફ ઇન્ડિયા' ભારતમાં કયા ક્રમનું યુનેસ્કો વર્લ્ડ હેરિટેજ સાઇટ છે?", options: ["40", "41", "44", "45"], answer: 2, explanation: "'મરાઠા મિલિટરી લેન્ડસ્કેપ ઓફ ઇન્ડિયા' ભારતની 44મી યુનેસ્કો વર્લ્ડ હેરિટેજ સાઇટ છે. સાચો જવાબ (C) છે." },
+            { question: "મરાઠા મિલિટરી લેન્ડસ્કેપમાં કુલ કેટલા કિલ્લાઓ સામેલ છે?", options: ["10", "11", "12", "15"], answer: 2, explanation: "આ લેન્ડસ્કેપમાં મહારાષ્ટ્ર અને તમિલનાડુના કુલ 12 કિલ્લાઓનો સમાવેશ થાય છે. સાચો જવાબ (C) છે." },
+              { question: "'One Nation, One Time' પહેલ કયા વિભાગ દ્વારા શરૂ કરવામાં આવી?", options: ["વિજ્ઞાન અને ટેકનોલોજી વિભાગ", "નાણાં મંત્રાલય", "ગ્રાહક બાબતોનો વિભાગ", "ઈલેક્ટ્રોનિક્સ અને આઈટી મંત્રાલય"], answer: 2, explanation: "'One Nation, One Time' પહેલ ગ્રાહક બાબતોના વિભાગ દ્વારા શરૂ કરવામાં આવી છે. સાચો જવાબ (C) છે." },
+            { question: "'One Nation, One Time' માટે સમયના સ્ત્રોત તરીકે કોની મદદ લેવામાં આવી છે?", options: ["DRDO", "ISRO અને NPL", "CSIR અને IITs", "UIDAI"], answer: 1, explanation: "આ પહેલ માટે ISRO અને NPL (નેશનલ ફિઝિકલ લેબોરેટરી) પાસેથી સમયના સ્ત્રોત તરીકે મદદ લેવામાં આવી છે. સાચો જવાબ (B) છે." },
+            { question: "તાજેતરમાં NIIF ના 'ભારત-જાપાન ભંડોળ' માટે ભારત સરકાર કેટલો ફાળો આપે છે?", options: ["25%", "49%", "51%", "60%"], answer: 1, explanation: "આ ભંડોળમાં ભારત સરકાર 49% અને જાપાન સરકાર 51% ફાળો આપે છે. સાચો જવાબ (B) છે." },
+            { question: "તાજેતરમાં રસાયણો, કચરો અને પ્રદૂષણ પર વૈશ્વિક વિજ્ઞાન-નીતિ પેનલની સ્થાપના કઈ સંસ્થા હેઠળ કરવામાં આવી છે?", options: ["WHO", "UNFCCC", "UNEP", "UNESCO"], answer: 2, explanation: "આ પેનલની સ્થાપના UNEP (યુનાઇટેડ નેશન્સ એન્વાયર્નમેન્ટ પ્રોગ્રામ) હેઠળ કરવામાં આવી છે. સાચો જવાબ (C) છે." },
+            { question: "તાજેતરમાં રસાયણો, કચરો અને પ્રદૂષણ પર વૈશ્વિક વિજ્ઞાન-નીતિ પેનલ ક્યા શહેરમાં સ્થાપિત થઈ છે?", options: ["જિનિવા, સ્વિટ્ઝર્લેન્ડ", "નાઈરોબી, કેન્યા", "પુન્ટા ડેલ એસ્ટે, ઉરુગ્વે", "પેરિસ, ફ્રાન્સ"], answer: 2, explanation: "આ પેનલ ઉરુગ્વેના પુન્ટા ડેલ એસ્ટે શહેરમાં સ્થાપિત થઈ છે. સાચો જવાબ (C) છે." },
+            { question: "તાજેતરમાં 'પ્રોજેક્ટ કુશા' કઈ સંસ્થાઓ દ્વારા સંયુક્ત રીતે વિકસાવવામાં આવ્યું છે?", options: ["HAL અને ISRO", "DRDO અને BEL", "DRDO અને ISRO", "HAL અને BEL"], answer: 1, explanation: "'પ્રોજેક્ટ કુશા' DRDO અને BEL દ્વારા સંયુક્ત રીતે વિકસાવાયું છે. સાચો જવાબ (B) છે." },
+            { question: "તાજેતરમાં વિકસાવવામાં આવેલ પ્રોજેક્ટ કુશાનું નામ કોના પરથી રાખવામાં આવ્યું છે?", options: ["ભગવાન કૃષ્ણ", "લક્ષ્મણ", "ભગવાન રામનાં પુત્ર કુશ", "હનુમાન"], answer: 2, explanation: "આ પ્રોજેક્ટનું નામ ભગવાન રામના પુત્ર કુશના નામ પરથી રાખવામાં આવ્યું છે. સાચો જવાબ (C) છે." },
+            { question: "તાજેતરમાં વિકસાવવામાં આવેલ પ્રોજેક્ટ કુશાને અન્ય ક્યા નામથી ઓળખવામાં આવે છે?", options: ["Programme Akash", "ERADS અથવા PGLRSAM", "Varunastra", "AGNI Prime"], answer: 1, explanation: "પ્રોજેક્ટ કુશાને ERADS (Extended Range Air Defence System) તરીકે પણ ઓળખવામાં આવે છે. સાચો જવાબ (B) છે." },
+            { question: "તાજેતરમાં વિકસાવવામાં આવેલ 'ULLAS' પહેલ હેઠળ પૂર્ણ સાક્ષર રાજ્ય કયાં છે?", options: ["મિઝોરમ અને ત્રિપુરા", "ગોવા અને ત્રિપુરા", "તેલંગાણા અને સિક્કિમ", "ગુજરાત અને કેરળ"], answer: 1, explanation: "'ULLAS' પહેલ હેઠળ ગોવા અને ત્રિપુરા પૂર્ણ સાક્ષર રાજ્યો છે. સાચો જવાબ (B) છે." },
+            { question: "પર્ફોર્મન્સ ગ્રેડિંગ ઇન્ડેક્સ (PGI 2.0) નો મુખ્ય ઉદ્દેશ શું છે?", options: ["શિક્ષકો ના દિવસો ની ગણતરી", "શાળા શિક્ષણના ધોરણે રાજ્યો અને કેન્દ્રશાસિત પ્રદેશોની કામગીરીનું મૂલ્યાંકન", "યુનિવર્સિટીઓ ની રેન્કિંગ", "ઉપરોક્ત પૈકી એક પણ નહિ"], answer: 1, explanation: "PGI 2.0 નો મુખ્ય ઉદ્દેશ શાળા શિક્ષણના સ્તરે રાજ્યો અને કેન્દ્રશાસિત પ્રદેશોની કામગીરીનું મૂલ્યાંકન કરવાનો છે. સાચો જવાબ (B) છે." },
+            { question: "PGI 2.0 રિપોર્ટમાં વર્ષ 2022-23 અને 2023-24 માટે ગુજરાતે કયો PGI ગ્રેડ મેળવ્યો હતો?", options: ["ઉત્કર્ષ", "ચેસ્ટા-1", "પ્રચેસ્ટા-3", "અતિ-ઉત્તમ"], answer: 2, explanation: "આ રિપોર્ટમાં ગુજરાતે 'પ્રચેસ્ટા-3' ગ્રેડ મેળવ્યો હતો. સાચો જવાબ (C) છે." },
+            { question: "PGI 2.0 રિપોર્ટમાં ડેટા મેળવવા માટે કયા મુખ્ય સ્ત્રોતોનો ઉપયોગ થાય છે?", options: ["UDISE+", "NAS", "PM POSHAN પોર્ટલ", "આપેલ તમામ"], answer: 3, explanation: "PGI 2.0 માટે UDISE+, NAS અને PM POSHAN પોર્ટલ જેવા મુખ્ય સ્ત્રોતોમાંથી ડેટા મેળવવામાં આવે છે. સાચો જવાબ (D) આપેલ તમામ છે." },
+            { question: "તાજેતરમાં વિકસિત પ્રથમ ફાસ્ટ પેટોલ વેસલ 'અદમ્ય' (FPV) કઈ સંસ્થા દ્વારા તૈયાર કરવામાં આવી છે?", options: ["માઝગાંવ ડોક શિપબિલ્ડર્સ", "કોચીન શિપયાર્ડ", "ગોવા શિપયાર્ડ લિમિટેડ (GSL)", "હિન્દુસ્તાન શિપયાર્ડ લિમિટેડ"], answer: 2, explanation: "પ્રથમ ફાસ્ટ પેટોલ વેસલ 'અદમ્ય' ગોવા શિપયાર્ડ લિમિટેડ (GSL) દ્વારા તૈયાર કરવામાં આવી છે. સાચો જવાબ (C) છે." },
+            { question: "તાજેતરમાં \"સંવિધાન હત્યા દિવસ”ના કાર્યક્રમમાં અમિત શાહ દ્વારા શરૂ કરવામાં આવેલા \"#LongLiveDemocracy Yatra\" નો મુખ્ય ઉદ્દેશ શું છે?", options: ["પ્રવાસી સ્થળોની મુલાકાત", "ચૂંટણી પ્રચાર", "બંધારણીય મૂલ્યોના રક્ષણ અંગે જાગૃતિ", "સરકારની નીતિઓનો પ્રચાર"], answer: 2, explanation: "આ યાત્રાનો મુખ્ય ઉદ્દેશ બંધારણીય મૂલ્યોના રક્ષણ અંગે જાગૃતિ ફેલાવવાનો છે. સાચો જવાબ (C) છે." },
+            { question: "તાજેતરમાં \"સંવિધાન હત્યા દિવસ\" નિમિત્તે \"#LongLiveDemocracy Yatra\" ની શરૂઆત કોણે કરી?", options: ["નરેન્દ્ર મોદી", "ધર્મેન્દ્ર પ્રધાન", "અમિત શાહ", "પીયૂષ ગોયલ"], answer: 2, explanation: "આ યાત્રાની શરૂઆત કેન્દ્રીય ગૃહ મંત્રી શ્રી અમિત શાહે કરી હતી. સાચો જવાબ (C) છે." },
+            { question: "તાજેતરમાં કેન્દ્રીય ગૃહ અને સહકાર મંત્રીની 25મી કેન્દ્રીય ઝોનલ કાઉન્સિલની બેઠક ક્યાં યોજાઈ હતી?", options: ["લખનઉ", "રાયપુર", "દિલ્હી", "વારાણસી"], answer: 3, explanation: "25મી કેન્દ્રીય ઝોનલ કાઉન્સિલની બેઠક વારાણસીમાં યોજાઈ હતી. સાચો જવાબ (D) છે." },
+            { question: "ગ્લોબલ સેન્ટર ફોર ટ્રેડિશનલ મેડિસિન (GCTM) સેન્ટર નું ઉદ્ઘાટન ક્યાં કરવામાં આવ્યું છે?", options: ["સુરત", "વડોદરા", "ભરૂચ", "જામનગર"], answer: 3, explanation: "WHO ના GCTM સેન્ટરનું ઉદ્ઘાટન ગુજરાતના જામનગરમાં કરવામાં આવ્યું છે. સાચો જવાબ (D) છે." },
+            { question: "પ્રધાનમંત્રી વિશ્વકર્મા યોજના હેઠળ કારીગરોને કેટલી રકમ સુધીની લોન આપવામાં આવે છે?", options: ["₹50,000", "₹1,00,000", "₹2,00,000", "₹3,00,000"], answer: 3, explanation: "આ યોજના હેઠળ કારીગરોને બે તબક્કામાં કુલ ₹3,00,000 સુધીની કોલેટરલ-ફ્રી લોન આપવામાં આવે છે. સાચો જવાબ (D) છે." },
+            { question: "તાજેતરમાં લાગુ થયેલ UMEED પોર્ટલ કયા કાયદા હેઠળ શરૂ થયો છે?", options: ["Waqf (Protection) Act, 2020", "Waqf (Amendment) Bill, 2019", "Waqf (Amendment) Bill, 2025", "Minority Act, 2024"], answer: 2, explanation: "UMEED પોર્ટલ Waqf (Amendment) Bill, 2025 હેઠળ શરૂ કરવામાં આવ્યું છે. સાચો જવાબ (C) છે." }
+        ];
+// --- DOM ELEMENTS ---
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const explanationContainerEl = document.getElementById('explanation-container');
+        const explanationTextEl = document.getElementById('explanation-text');
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const scoreEl = document.getElementById('score');
+        const wrongAnswersEl = document.getElementById('wrong-answers');
+        const quizBodyEl = document.getElementById('quiz-body');
+        const resultsContainerEl = document.getElementById('results-container');
+        const finalScoreEl = document.getElementById('final-score');
+        const totalWrongEl = document.getElementById('total-wrong');
+        const navigationContainerEl = document.getElementById('navigation-container');
+        const progressTextEl = document.getElementById('progress-text');
+
+        // --- STATE VARIABLES ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let wrongAnswers = 0;
+        let userAnswers = []; // To store user's answers
+
+        // --- FUNCTIONS ---
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            wrongAnswers = 0;
+            userAnswers = new Array(quizData.length).fill(null);
+            updateScoreDisplay();
+            resultsContainerEl.classList.add('hidden');
+            quizBodyEl.classList.remove('hidden');
+            navigationContainerEl.classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            // Reset UI elements
+            optionsContainerEl.innerHTML = '';
+            explanationContainerEl.classList.add('hidden');
+            
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionTextEl.textContent = `${currentQuestionIndex + 1}. ${currentQuestion.question}`;
+            progressTextEl.textContent = `પ્રશ્ન ${currentQuestionIndex + 1} / ${quizData.length}`;
+
+            // Create and append option buttons
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn', 'w-full', 'text-left', 'p-4', 'rounded-lg', 'bg-white', 'text-cyan-800', 'font-semibold', 'focus:outline-none', 'focus:ring-2', 'focus:ring-cyan-400');
+                button.dataset.index = index;
+                button.addEventListener('click', handleOptionSelect);
+                optionsContainerEl.appendChild(button);
+            });
+            
+            updateNavButtons();
+        }
+
+        function handleOptionSelect(e) {
+            // Prevent re-answering
+            if (userAnswers[currentQuestionIndex] !== null) return;
+
+            const selectedButton = e.target;
+            const selectedIndex = parseInt(selectedButton.dataset.index);
+            userAnswers[currentQuestionIndex] = selectedIndex; // Store answer
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            const correctIndex = currentQuestion.answer;
+
+            if (selectedIndex === correctIndex) {
+                score += 1;
+                selectedButton.classList.add('correct');
+            } else {
+                score -= 0.25;
+                wrongAnswers += 1;
+                selectedButton.classList.add('incorrect');
+                optionsContainerEl.children[correctIndex].classList.add('correct');
+            }
+
+            updateScoreDisplay();
+            showExplanationAndDisableOptions();
+        }
+        
+        function showExplanationAndDisableOptions() {
+            const currentQuestion = quizData[currentQuestionIndex];
+            explanationTextEl.textContent = currentQuestion.explanation;
+            explanationContainerEl.classList.remove('hidden');
+
+            Array.from(optionsContainerEl.children).forEach(button => {
+                button.disabled = true;
+            });
+        }
+
+        function updateScoreDisplay() {
+            scoreEl.textContent = score.toFixed(2);
+            wrongAnswersEl.textContent = wrongAnswers;
+        }
+        
+        function updateNavButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            // If it's the last question, change Next button to "Finish"
+            if (currentQuestionIndex === quizData.length - 1) {
+                nextBtn.textContent = 'પૂર્ણ કરો';
+            } else {
+                nextBtn.textContent = 'આગળ →';
+            }
+        }
+  function handleNextQuestion() {
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+        
+        function handlePrevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        function showResults() {
+            quizBodyEl.classList.add('hidden');
+            navigationContainerEl.classList.add('hidden');
+            resultsContainerEl.classList.remove('hidden');
+            finalScoreEl.textContent = score.toFixed(2);
+            totalWrongEl.textContent = wrongAnswers;
+        }
+
+        // --- EVENT LISTENERS ---
+        nextBtn.addEventListener('click', handleNextQuestion);
+        prevBtn.addEventListener('click', handlePrevQuestion);
+        restartBtn.addEventListener('click', startQuiz);
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', startQuiz);
+    </script>
+</body>
+</html>
